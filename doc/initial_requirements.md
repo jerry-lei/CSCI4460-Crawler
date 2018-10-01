@@ -2,9 +2,18 @@
    - Finite number of parallel crawlers
    - In memory DB to store links to crawl next
    - Scheduler to manage crawlers
-   - Persistent DB to hold an index of crawled links ==> [Key: URL, Document: <HTML DOC>, Freq: # of days]
-   - API to consume links and return the HTML Document
+   - Persistent DB to hold an index of crawled links
+      - Key: URL
+      - Document: HTML DOC
+      - Freq: # of days
    - Thread to consistently go through the DB to update any expired documents
+
+
+## API Requirements
+   - API to consume links and return the HTML Document
+      - Link Analysis calls our HTTP endpoint
+      - Push to text transformation on success
+      - Return success/failure to link analysis
 
 
 ## TODO:
