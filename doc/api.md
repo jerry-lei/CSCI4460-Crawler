@@ -1,6 +1,7 @@
 ## API Design
 
 URL: /crawl
+METHOD: POST
 Payload Objects: {
     url: <url>,
     frequency: <freq>

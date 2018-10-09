@@ -4,8 +4,9 @@
    - Scheduler to manage crawlers
    - Persistent DB to hold an index of crawled links
       - Key: URL
-      - Document: HTML DOC
       - Freq: # of days
+      - Timestamp: Last time it was updated
+      - Result: Success/Failure
    - Thread to consistently go through the DB to update any expired documents
 
 
