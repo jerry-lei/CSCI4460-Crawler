@@ -3,7 +3,26 @@ import threading
 
 from crawler import *
 
+"""
+Notes to self:
+- look at threading pool to handle crawler threads
+--- https://www.codementor.io/lance/simple-parallelism-in-python-du107klle
+--- package initializes handles the entire scheduler algo, but new links
+    cannot be added to the pool after it has initialized
+"""
 
+"""
+Usage: Instantiate a Scheduler object with an integer parameter setting
+       the max number of crawler threads, then start the main scheduler
+       loop. To access scheduler/function, make calls directly to its
+       functions.
+e.g.
+ `
+   scheduler = Scheduler(15) #instantiate Scheduler object
+   scheduler.start() #starts the main loop
+   scheduler.dump_hp_links(["https://google.com", "https://apple.com"]) #add links to the queue to process
+ `
+"""
 class Scheduler(threading.Thread):
 
     #n: number of set crawlers
@@ -11,7 +30,6 @@ class Scheduler(threading.Thread):
         super(Scheduler, self).__init__()
         self.hp_queue = Queue()
         self.lp_queue = Queue()
-        self.crawlers = []
         self.crawled_hp = {}
         self.crawled_lp = {}
 
@@ -21,6 +39,7 @@ class Scheduler(threading.Thread):
     #FOR THE CLI EXIT
     def set_exit(self, value):
         self.exit = value
+
 
 
     def print_crawled_hp(self):
