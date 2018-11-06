@@ -7,8 +7,8 @@ from scheduler import Scheduler
 
 class Shell(cmd.Cmd):
     """Cmd shell that handles user input and passes it to our site."""
-    intro = '===SCHEDULER SHELL==='
-    prompt = ''
+    intro = '=== (SCHEDULER SHELL) ==='
+    prompt = '(cmd) '
 
 
     scheduler = Scheduler(5)
@@ -20,6 +20,9 @@ class Shell(cmd.Cmd):
     def do_addhp(self, arg):
         vals = arg.split(' ')
         self.scheduler.dump_hp_links(vals)
+
+    def do_showhp(self, arg):
+        self.scheduler.print_crawled_hp()
 
     def do_EOF(self, line):
         """Ignore EOF values; likely caused by lack of stdin."""
