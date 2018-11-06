@@ -15,6 +15,14 @@ class Scheduler(threading.Thread):
         self.crawled_hp = {}
         self.crawled_lp = {}
 
+        #FOR THE CLI EXIT
+        self.exit = False
+
+    #FOR THE CLI EXIT
+    def set_exit(self, value):
+        self.exit = value
+
+
     def print_crawled_hp(self):
         print("Crawled high_priority: " + str(self.crawled_hp))
 
@@ -37,6 +45,8 @@ class Scheduler(threading.Thread):
     #main thread loop
     def run(self):
         while(True):
+            if self.exit == True:
+                break;
             #Note: Queue.empty() does not guarentee that the queue is empty
             #        because this is a multithreaded implementation of queue.
             #        This is not a concern in our implementation, because we
@@ -56,4 +66,4 @@ class Scheduler(threading.Thread):
 if __name__ == "__main__":
     k = Scheduler(15)
     k.start()
-    k.dump_hp_links(["https://github.com", "https://apple.com"])
+    k.dump_hp_links(["b", "a"])

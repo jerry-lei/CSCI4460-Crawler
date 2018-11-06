@@ -28,6 +28,10 @@ class Shell(cmd.Cmd):
         """Ignore EOF values; likely caused by lack of stdin."""
         return True
 
+    def do_exit(self, arg):
+        self.scheduler.set_exit(True)
+        exit()
+
 
 if __name__ == '__main__':
     MY_SHELL = Shell()
