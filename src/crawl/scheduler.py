@@ -1,4 +1,5 @@
 from multiprocessing import Queue
+import concurrent.futures
 import threading
 
 from crawler import *
@@ -30,6 +31,9 @@ class Scheduler(threading.Thread):
         super(Scheduler, self).__init__()
         self.hp_queue = Queue()
         self.lp_queue = Queue()
+        self.max_crawlers = n
+        # Too receive schedule links, return [link].result()
+        #    stores link as key, and 'future' object as value
         self.crawled_hp = {}
         self.crawled_lp = {}
 
@@ -63,22 +67,23 @@ class Scheduler(threading.Thread):
 
     #main thread loop
     def run(self):
-        while(True):
-            if self.exit == True:
-                break;
-            #Note: Queue.empty() does not guarentee that the queue is empty
-            #        because this is a multithreaded implementation of queue.
-            #        This is not a concern in our implementation, because we
-            #        only have a single process (this one) accessing the queue.
-            if(not self.hp_queue.empty()):
-                #print("Removed link from hp_queue: " + self.hp_queue.get())
-                link = self.hp_queue.get()
-                self.crawled_hp[link] = crawl_link(link)
-            else:
-                if(not self.lp_queue.empty()):
-                    #print("Removed link from lp_queue: " + self.lp_queue.get())
-                    link = self.lp_queue.get()
-                    self.crawled_lp[link] = crawl_link(link)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_crawlers) as executor:
+            while(True):
+                if self.exit == True:
+                    break;
+                #Note: Queue.empty() does not guarentee that the queue is empty
+                #        because this is a multithreaded implementation of queue.
+                #        This is not a concern in our implementation, because we
+                #        only have a single process (this one) accessing the queue.
+                if(not self.hp_queue.empty()):
+                    #print("Removed link from hp_queue: " + self.hp_queue.get())
+                    link = self.hp_queue.get()
+                    self.crawled_hp[link] = executor.submit(crawl_link, link)
+                else:
+                    if(not self.lp_queue.empty()):
+                        #print("Removed link from lp_queue: " + self.lp_queue.get())
+                        link = self.lp_queue.get()
+                        self.crawled_lp[link] = executor.submit(crawl_link, link)
 
 
 # Tests for functions in scheduler.py
