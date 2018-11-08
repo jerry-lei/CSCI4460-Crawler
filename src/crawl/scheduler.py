@@ -2,7 +2,7 @@ from multiprocessing import Queue
 import concurrent.futures
 import threading
 
-from crawler import *
+from .crawler import *
 
 """
 Notes to self:
