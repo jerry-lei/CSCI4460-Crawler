@@ -58,6 +58,24 @@ class Scheduler(threading.Thread):
         for link in links:
             self.hp_queue.put(link)
             #print("Added link to hp_queue: " + link)
+        result = {}
+        # block until all links are added into the crawled_hp dictionary
+        while True:
+            exists_flag = False
+            for link in links:
+                if link not in self.crawled_hp:
+                    exists_flag = True
+            if exists_flag == False:
+                break
+        # block until all items are finished processing.
+        for items in self.crawled_hp.items():
+            while items[1].running():
+                continue
+            result[items[0]] = items[1].result()
+        self.crawled_hp.clear()
+        return result
+
+
 
     #dump a list of low-priority links
     def dump_lp_links(self, links):
