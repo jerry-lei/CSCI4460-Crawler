@@ -46,15 +46,17 @@ class DomainCrawl(Resource):
         # Send the URLs to the scheduler
         results = SCHEDULER.dump_hp_links(payload)
 
-        returnObj = [] # Return object to the request
-        htmlPayload = [] # Payload containing the HTML texts
+        return_obj = [] # Return object to the request
+        html_payload = [] # Payload containing the HTML texts
         for result in results.keys():
-            if results[result][1] == True:
-                htmlPayload.append([result, results[result][0].read()])
+            if results[result][1] is True:
+                html_payload.append([result, results[result][0].read()])
             else:
-                returnObj.append(result)
+                return_obj.append(result)
 
-        return returnObj, 200
+        ### Implement the API request to text transformation
+
+        return return_obj, 200
 
 API.add_resource(DomainCrawl, "/crawl")
 
