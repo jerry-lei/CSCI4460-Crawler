@@ -33,15 +33,28 @@ class DomainCrawl(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("URLS")
         args = parser.parse_args()
+        # Ensure payload is valid
         if args["URLS"] is None:
             return "Bad Request: No URLS key found", 500
+
+        # Parse the payload
         urls = ast.literal_eval(args["URLS"])
         payload = []
         for url in urls:
             payload.append(urls[url])
-        SCHEDULER.dump_hp_links(payload) # Send the URLs to the scheduler
-        SCHEDULER.print_crawled_hp()
-        return "Success", 200
+
+        # Send the URLs to the scheduler
+        results = SCHEDULER.dump_hp_links(payload)
+
+        returnObj = [] # Return object to the request
+        htmlPayload = [] # Payload containing the HTML texts
+        for result in results.keys():
+            if results[result][1] == True:
+                htmlPayload.append([result, results[result][0].read()])
+            else:
+                returnObj.append(result)
+
+        return returnObj, 200
 
 API.add_resource(DomainCrawl, "/crawl")
 
