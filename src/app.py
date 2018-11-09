@@ -58,11 +58,16 @@ class DomainCrawl(Resource):
 
         return return_obj, 200
 
-API.add_resource(DomainCrawl, "/crawl")
 
-# Start the scheduler thread
-SCHEDULER = Scheduler(5)
-SCHEDULER.start()
+def main():
+    API.add_resource(DomainCrawl, "/crawl")
 
-# Start the server
-APP.run(debug=True)
+    # Start the scheduler thread
+    SCHEDULER = Scheduler(5)
+    SCHEDULER.start()
+
+    # Start the server
+    APP.run(debug=True)
+
+if __name__ == '__main__':
+    main()
