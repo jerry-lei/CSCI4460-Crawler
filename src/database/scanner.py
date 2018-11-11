@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+# continuously check to see if any URL is expired
+# By expiring it means that the lastUpdated is "frequency" older
 def db_scanner(collection):
     item = collection.find_one()
     #print("item" ,item['lastUpdated'])
