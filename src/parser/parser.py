@@ -5,15 +5,12 @@ sys.path.append("../")
 from crawl import crawler
 
 
-
-
-
 def get_bad_paths(link):
 
 	(response, status) = crawler.crawl_link(link)
 
 	if status == "Success":
-		return parse(response.read().decode())
+		return parse(response.read().decode("utf-8-sig"))
 	else:
 		return []
 
@@ -31,6 +28,7 @@ def parse(text):
 		orig_line = line
 		# Ignore comments and blank lines
 		line = line.strip()
+
 		if line.startswith("#") or line == "":
 			continue
 
@@ -65,6 +63,7 @@ if __name__ == '__main__':
 	print("my part:", get_bad_paths("http://rpi.edu/robots.taxt"))
 	print("my part:", get_bad_paths("https://www.google.com/search?q=null?"))
 	print("my part:", get_bad_paths("https://en.wikipedia.org/robots.txt"))
+	print("my part:", get_bad_paths("http://homepages.rpi.edu/~tullyw/test_robots.txt"))
 
 
 
