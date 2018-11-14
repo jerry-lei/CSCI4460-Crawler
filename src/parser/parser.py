@@ -7,10 +7,9 @@ from crawl import crawler
 
 def get_bad_paths(link):
 
-	(response, status) = crawler.crawl_link(link)
-
-	if status == "Success":
-		return parse(response.read().decode("utf-8-sig"))
+	response = crawler.crawl_link(link)
+	if response[1] == True:
+		return parse(response[0].read().decode("unicode_escape"))
 	else:
 		return []
 
