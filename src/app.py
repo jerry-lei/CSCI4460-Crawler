@@ -12,6 +12,7 @@ from crawl.scheduler import Scheduler
 
 APP = Flask(__name__)
 API = Api(APP)
+SCHEDULER = Scheduler(5)
 
 class DomainCrawl(Resource):
     """The crawl API endpoint process URLs
@@ -63,7 +64,6 @@ def main():
     API.add_resource(DomainCrawl, "/crawl")
 
     # Start the scheduler thread
-    SCHEDULER = Scheduler(5)
     SCHEDULER.start()
 
     # Start the server
