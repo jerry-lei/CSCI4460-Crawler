@@ -6,13 +6,30 @@ requests to specific components.
 """
 
 import ast
-from flask import Flask
+import validators
+from flask import Flask, request
 from flask_restful import Api, Resource, reqparse
 from crawl.scheduler import Scheduler
+from parser.parser import get_bad_paths
 
 APP = Flask(__name__)
 API = Api(APP)
 SCHEDULER = Scheduler(5)
+
+class RobotsCrawl(Resource):
+    """The robots.txt API endpoint to retreive what links not to crawl
+
+    Available methods:
+        - GET
+    """
+
+    @staticmethod
+    def get():
+        domain = request.args.get('url')
+        if (domain == None or not validators.url(domain)):
+            return "Bad Request: Bad URL Sent", 400
+        else:
+            return get_bad_paths(domain), 200
 
 class DomainCrawl(Resource):
     """The crawl API endpoint process URLs
@@ -36,7 +53,7 @@ class DomainCrawl(Resource):
         args = parser.parse_args()
         # Ensure payload is valid
         if args["URLS"] is None:
-            return "Bad Request: No URLS key found", 500
+            return "Bad Request: No URLS key found", 400
 
         # Parse the payload
         urls = ast.literal_eval(args["URLS"])
@@ -65,6 +82,7 @@ def main():
     """
 
     API.add_resource(DomainCrawl, "/crawl")
+    API.add_resource(RobotsCrawl, '/robots')
 
     # Start the scheduler thread
     SCHEDULER.start()
