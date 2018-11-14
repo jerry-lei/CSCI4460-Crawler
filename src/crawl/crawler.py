@@ -28,17 +28,18 @@ def crawl_link(link):
 
     Code Source: https://docs.python.org/3/howto/urllib2.html ('Fetching URLs')
     """
+    if not validators.url(link):
+        return ("", False, "Invalid link")
     print("Currently handling link: " + link)
-    my_link = link
-    req = urllib.request.Request(my_link)
+    req = urllib.request.Request(link)
     try:
         response = urllib.request.urlopen(req)
     except HTTPError as error:
-        return (None, error.code)
-    except URLError as error:
-        return (None, error.reason)
+        return (None, False, error.code)
     except ContentTooShortError as error:
-        return (None, "ContentTooShortError")
+        return (None, False, "ContentTooShortError")
+    except URLError as error:
+        return (None, False, error.reason)
     else:
         return (response, True, "")
 
