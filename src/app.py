@@ -61,6 +61,9 @@ class DomainCrawl(Resource):
 
 
 def main():
+    """Run the web server
+    """
+
     API.add_resource(DomainCrawl, "/crawl")
 
     # Start the scheduler thread

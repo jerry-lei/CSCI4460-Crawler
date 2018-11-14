@@ -10,8 +10,8 @@ https://rpi.edu.com -- takes a long time to respond
 
 
 import urllib.request
-import validators
 from urllib.error import URLError, HTTPError, ContentTooShortError
+import validators
 
 
 def crawl_link(link):
