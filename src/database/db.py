@@ -34,8 +34,8 @@ def find_all(collection, attri):
 def find_unique(collection, url):
     pprint.pprint(collection.find_one({"url": url}))
 
-
-if __name__ == "__main__":
+# connects to local database
+def connect_db():
     # connect to local database
     client = MongoClient()
     client = MongoClient('localhost', 27017)
@@ -45,14 +45,19 @@ if __name__ == "__main__":
     db = client.database
     collection = db.collection
 
-    result = db.collection.create_index([('url', pymongo.ASCENDING)], unique=True)
+    db.collection.create_index([('url', pymongo.ASCENDING)], unique=True)
     print(db.collection_names(include_system_collections=False))
+    return collection
 
+if __name__ == "__main__":
     # insertion/posting
     url = "www.bing.com"
     freq = 7
     lastUpdated = datetime.today()
     response = True
+
+    # connect to db
+    collection = connect_db()
 
     # insert using today's date
     insertion(collection, url, freq, lastUpdated, response)
