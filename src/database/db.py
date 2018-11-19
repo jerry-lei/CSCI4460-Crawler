@@ -2,7 +2,6 @@ import pymongo
 import pprint
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-from scanner import *
 
 # Insert to db and doesn't allow duplicate insertion
 def insertion(collection, url, freq, lastUpdated, response):
@@ -49,6 +48,7 @@ def connect_db():
     print(db.collection_names(include_system_collections=False))
     return collection
 
+"""
 if __name__ == "__main__":
     # insertion/posting
     url = "www.bing.com"
@@ -70,4 +70,4 @@ if __name__ == "__main__":
     # test 
     #print_all(collection) # print all item in the db
     #find_unique(collection, "www.bing.com")
-    db_scanner(collection)
+    db_scanner(collection)"""

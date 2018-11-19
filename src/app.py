@@ -7,14 +7,18 @@ requests to specific components.
 
 import ast
 import validators
+from datetime import datetime, timedelta
 from flask import Flask, request
 from flask_restful import Api, Resource, reqparse
 from crawl.scheduler import Scheduler
 from parser.parser import get_bad_paths
+from database.db import insertion, connect_db
 
 APP = Flask(__name__)
 API = Api(APP)
 SCHEDULER = Scheduler(5)
+collection = connect_db()
+
 
 class RobotsCrawl(Resource):
     """The robots.txt API endpoint to retreive what links not to crawl
@@ -69,10 +73,12 @@ class DomainCrawl(Resource):
         for result in results.keys():
             if results[result][1] is True:
                 html_payload.append([result, results[result][0].read()])
+                insertion(collection, result, 7, datetime.now(), True)
             else:
                 return_obj.append(result)
+                insertion(collection, result, 7, datetime.now(), False)
 
-        ### Implement the API request to text transformation
+        ### Implement the API request to text transformation & Indexing
 
         return return_obj, 200
 
@@ -84,6 +90,7 @@ def main():
     API.add_resource(DomainCrawl, "/crawl")
     API.add_resource(RobotsCrawl, '/robots')
 
+    # Start the DB
     # Start the scheduler thread
     SCHEDULER.start()
 
