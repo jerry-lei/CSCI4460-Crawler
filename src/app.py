@@ -95,7 +95,7 @@ def main():
     SCHEDULER.start()
 
     # Start the server
-    APP.run(debug=True)
+    APP.run(port=80, host='0.0.0.0')
 
 if __name__ == '__main__':
     main()
