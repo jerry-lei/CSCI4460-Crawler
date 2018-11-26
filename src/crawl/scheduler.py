@@ -112,10 +112,38 @@ class Scheduler(threading.Thread):
 
     #dump a list of low-priority links
     def dump_lp_links(self, links):
-        """ Adds a list of low priority links to the queue """
+        """ Adds a list of low priority links to the queue
+
+        NOTE: This blocks the function caller until all input links are
+              finished processing.
+
+        Inputs:
+            [List] -- list of URL strings
+
+        Returns:
+            {Key:Value} --
+                Key: URL string
+                Value: urllib response object
+        """
         for link in links:
             self.lp_queue.put(link)
-            #print("Added link to lp_queue: " + link)
+            #print("Added link to hp_queue: " + link)
+        result = {}
+        # block until all links are added into the crawled_lp dictionary
+        while True:
+            exists_flag = False
+            for link in links:
+                if link not in self.crawled_lp:
+                    exists_flag = True
+            if exists_flag is False:
+                break
+        # block until all items are finished processing.
+        for items in self.crawled_lp.items():
+            while items[1].running():
+                continue
+            result[items[0]] = items[1].result()
+        self.crawled_lp.clear()
+        return result
 
     #main thread loop
     def run(self):

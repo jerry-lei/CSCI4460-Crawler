@@ -4,3 +4,11 @@
 
 
 Search engine crawler
+
+
+## Updates on 11/15
+
+To Do
+- Integrate Scanner into server
+- Write tests
+- Deploy to RCS Server
