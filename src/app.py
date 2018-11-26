@@ -6,21 +6,23 @@ requests to specific components.
 """
 
 import ast
-import validators
-import requests
-from datetime import datetime, timedelta
+from threading import Timer
+from datetime import datetime
+from parser.parser import get_bad_paths
 from flask import Flask, request
 from flask_restful import Api, Resource, reqparse
 from crawl.scheduler import Scheduler
-from parser.parser import get_bad_paths
 from database.db import insertion, connect_db
 from database.scanner import db_scanner
-from threading import Timer
+import validators
+import requests
+
+
 
 APP = Flask(__name__)
 API = Api(APP)
 SCHEDULER = Scheduler(5)
-collection = connect_db()
+COLLECTION = connect_db()
 
 
 class RobotsCrawl(Resource):
@@ -32,11 +34,16 @@ class RobotsCrawl(Resource):
 
     @staticmethod
     def get():
+        """Processes the robots.txt file & returns all the links to not crawl
+
+        Returns:
+            [List] -- List of links not to crawl
+        """
+
         domain = request.args.get('url')
-        if (domain == None or not validators.url(domain)):
+        if domain is None or not validators.url(domain):
             return "Bad Request: Bad URL Sent", 400
-        else:
-            return get_bad_paths(domain), 200
+        return get_bad_paths(domain), 200
 
 class DomainCrawl(Resource):
     """The crawl API endpoint process URLs
@@ -89,12 +96,12 @@ def send_requests(results):
     for result in results.keys():
         if results[result][1] is True:
             html_payload.append([result, results[result][0].read()])
-            insertion(collection, result, 7, datetime.now(), True)
+            insertion(COLLECTION, result, 7, datetime.now(), True)
         else:
             return_obj.append(result)
-            insertion(collection, result, 7, datetime.now(), False)
-    req_tt = requests.post('TT_URL', data=html_payload)
-    req_index = requests.post('INDEX_URL', data=return_obj)
+            insertion(COLLECTION, result, 7, datetime.now(), False)
+    #req_tt = requests.post('TT_URL', data=html_payload)
+    #req_index = requests.post('INDEX_URL', data=return_obj)
     return return_obj
 
 
@@ -102,11 +109,11 @@ def handle_db_scanner():
     """The callback function to handle scanning the database for expired links
     """
 
-    links = db_scanner(collection)
+    links = db_scanner(COLLECTION)
     results = SCHEDULER.dump_lp_links(links)
     send_requests(results)
-    t = Timer(86400, handle_db_scanner) # Run the thread once every day
-    t.start()
+    timer_thread = Timer(86400, handle_db_scanner) # Run the thread once every day
+    timer_thread.start()
 
 def main():
     """Run the web server
@@ -119,8 +126,8 @@ def main():
     SCHEDULER.start()
 
     # Start the DB Scanner thread
-    t = Timer(0, handle_db_scanner)
-    t.start()
+    timer_thread = Timer(0, handle_db_scanner)
+    timer_thread.start()
 
     # Start the server
     APP.run(port=3000, host='0.0.0.0')
