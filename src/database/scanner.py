@@ -9,6 +9,7 @@ def db_scanner(collection):
     #print(d)
     
     check = 0
+    expired_link = []
     for item in collection.find({ "lastUpdated": {"$lte": d}}): # 7 or older
         #pprint.pprint(item)
         if check == 0:
@@ -16,10 +17,6 @@ def db_scanner(collection):
             check = 1
 
         #r = crawl_link(item['url'])
-        print(item['url'])
-        # if (r == "Success"):
-        #     return 0
-        #     # send to text trans to remove
-        # else:
-        #     # send to indexing to remove   
-        #     return 0
+        expired_link.append(item['url'])
+
+    return expired_link
