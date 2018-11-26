@@ -11,6 +11,7 @@ sys.path.append("../")
 
 from crawl import crawler
 
+
 def get_bad_paths(link):
     """ Reads a robots.txt file, given its URL, and returns a list of
         paths which are not allowed to be crawled.
