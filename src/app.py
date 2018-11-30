@@ -91,18 +91,18 @@ def send_requests(results):
         [List] - List of failed links
     """
 
-    return_obj = [] # Return object to the request
+    bad_urls = [] # Return object to the request
     html_payload = [] # Payload containing the HTML texts
     for result in results.keys():
         if results[result][1] is True:
             html_payload.append([result, results[result][0].read()])
             insertion(COLLECTION, result, 7, datetime.now(), True)
         else:
-            return_obj.append(result)
+            bad_urls.append(result)
             insertion(COLLECTION, result, 7, datetime.now(), False)
     #req_tt = requests.post('TT_URL', data=html_payload)
     #req_index = requests.post('INDEX_URL', data=return_obj)
-    return return_obj
+    return bad_urls
 
 
 def handle_db_scanner():
@@ -115,12 +115,19 @@ def handle_db_scanner():
     timer_thread = Timer(86400, handle_db_scanner) # Run the thread once every day
     timer_thread.start()
 
-def main():
-    """Run the web server
+def set_up_api():
+    """ Sets up the API's endpoints
     """
 
     API.add_resource(DomainCrawl, "/crawl")
     API.add_resource(RobotsCrawl, '/robots')
+
+def main():
+    """Run the web server
+    """
+
+    # Set up API
+    set_up_api()
 
     # Start the scheduler thread
     SCHEDULER.start()
