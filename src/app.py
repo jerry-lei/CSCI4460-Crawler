@@ -6,6 +6,8 @@ requests to specific components.
 """
 
 import ast
+import validators
+import requests
 from threading import Timer
 from datetime import datetime
 from parser.parser import get_bad_paths
@@ -14,8 +16,7 @@ from flask_restful import Api, Resource, reqparse
 from crawl.scheduler import Scheduler
 from database.db import insertion, connect_db
 from database.scanner import db_scanner
-import validators
-import requests
+
 
 
 
