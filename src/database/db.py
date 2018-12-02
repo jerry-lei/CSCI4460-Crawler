@@ -63,4 +63,4 @@ def main():
     scanner.db_scanner(collection)
 
 if __name__ == "__main__":
-    main()
+    #main()
