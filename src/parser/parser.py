@@ -57,21 +57,21 @@ def parse(text):
 
         # Remove any comments that take up part of a line
         line_parts = line.split("#")
-        line = line_parts[0]
+        line = line_parts[0].lower()
 
         # Check if the user-agent applies.
-        if line.lower().startswith("user-agent:"):
+        if line.startswith("user-agent:"):
             parts = line.split(":", 1)
             agent = parts[1].strip()
             blocks_apply = agent == "*"
         # Record what pages the crawler is not allowed to crawl.
-        elif line.lower().startswith("disallow:"):
+        elif line.startswith("disallow:"):
             if blocks_apply:
                 parts = line.split(":", 1)
                 path = parts[1].strip()
                 blocked_paths.append(path)
         # There's no good way to handle specifically allowed paths.
-        elif line.lower().startswith("allow:"):
+        elif line.startswith("allow:"):
             continue
         else:
             print("Could not parse line:", orig_line)
@@ -79,10 +79,3 @@ def parse(text):
     return blocked_paths
 
 
-if __name__ == '__main__':
-    print("my part:", get_bad_paths("http://rpi.edu/robots.txt"))
-    print("my part:", get_bad_paths("http://cs.rpi.edu/robots.txt"))
-    print("my part:", get_bad_paths("http://rpi.edu/robots.taxt"))
-    print("my part:", get_bad_paths("https://www.google.com/search?q=null?"))
-    print("my part:", get_bad_paths("https://en.wikipedia.org/robots.txt"))
-    print("my part:", get_bad_paths("http://homepages.rpi.edu/~tullyw/test_robots.txt"))
