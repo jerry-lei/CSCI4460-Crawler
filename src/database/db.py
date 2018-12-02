@@ -45,7 +45,6 @@ def connect_db():
     collection = db.collection
 
     db.collection.create_index([('url', pymongo.ASCENDING)], unique=True)
-    print(db.collection_names(include_system_collections=False))
     return collection
 
 """
