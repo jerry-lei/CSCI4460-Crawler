@@ -1,7 +1,13 @@
+"""
+    This script starts a connection to the database and provides
+    neccessary functions for managing.
+
+"""
 import pymongo
 import pprint
 from pymongo import MongoClient
 from datetime import datetime, timedelta
+import scanner
 
 # Insert to db and doesn't allow duplicate insertion
 def insertion(collection, url, freq, lastUpdated, response):
@@ -12,26 +18,15 @@ def insertion(collection, url, freq, lastUpdated, response):
 
     # insert if and only if the item isn't already existed in the db
     try:
-            post_id = collection.insert_one(post).inserted_id # unique key
-            print("Inserted")
-            print("post_id", post_id)
+        post_id = collection.insert_one(post).inserted_id # unique key
+        print("Inserted")
+        print("post_id", post_id)
+        return 1
 
     except Exception:
-            print("Duplicates, do nothing")
+        print("Duplicates, do nothing")
+        return 0
 
-# print all item in the db
-def print_all(collection):
-    for item in collection.find():
-        pprint.pprint(item)
-
-# find and print the item with certain attribute
-def find_all(collection, attri):
-    for item in collection.find({"url": attri}):
-        pprint.pprint(item)
-
-# find and print the item, since it contains no duplicate, can just use find_one
-def find_unique(collection, url):
-    pprint.pprint(collection.find_one({"url": url}))
 
 # connects to local database
 def connect_db():
@@ -45,10 +40,10 @@ def connect_db():
     collection = db.collection
 
     db.collection.create_index([('url', pymongo.ASCENDING)], unique=True)
+    print(db.collection_names(include_system_collections=False))
     return collection
 
-"""
-if __name__ == "__main__":
+def main():
     # insertion/posting
     url = "www.bing.com"
     freq = 7
@@ -60,13 +55,12 @@ if __name__ == "__main__":
 
     # insert using today's date
     insertion(collection, url, freq, lastUpdated, response)
-    
     # insert using 14 days earlier than today
     url = "www.yahoo.com"
-    lastUpdated = datetime.today() - timedelta(days = 14)
+    lastUpdated = datetime.today() - timedelta(days=14)
     insertion(collection, url, freq, lastUpdated, response)
+    # test
+    scanner.db_scanner(collection)
 
-    # test 
-    #print_all(collection) # print all item in the db
-    #find_unique(collection, "www.bing.com")
-    db_scanner(collection)"""
+if __name__ == "__main__":
+    main()
