@@ -78,4 +78,3 @@ def parse(text):
 
     return blocked_paths
 
-
