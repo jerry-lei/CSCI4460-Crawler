@@ -6,12 +6,12 @@ def db_scanner(collection):
     item = collection.find_one()
     d = datetime.today() - timedelta(days = item['frequency'])
     
-    check = 0
+    #check = 0
     expired_link = []
     for item in collection.find({ "lastUpdated": {"$lte": d}}): # 7 or older
-        if check == 0:
-            print("Links need to be crawled again:")
-            check = 1
+        # if check == 0:
+        #     print("Links need to be crawled again:")
+        #     check = 1
         expired_link.append(item['url'])
 
     return expired_link
