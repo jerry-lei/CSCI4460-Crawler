@@ -138,7 +138,7 @@ def main():
     timer_thread.start()
 
     # Start the server
-    APP.run(port=3000, host='0.0.0.0')
+    APP.run(port=80, host='0.0.0.0')
 
 if __name__ == '__main__':
     main()
