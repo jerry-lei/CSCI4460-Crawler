@@ -7,7 +7,6 @@ import pymongo
 import pprint
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-import scanner
 
 # Insert to db and doesn't allow duplicate insertion
 def insertion(collection, url, freq, lastUpdated, response):
@@ -40,27 +39,4 @@ def connect_db():
     collection = db.collection
 
     db.collection.create_index([('url', pymongo.ASCENDING)], unique=True)
-    print(db.collection_names(include_system_collections=False))
     return collection
-
-def main():
-    # insertion/posting
-    url = "www.bing.com"
-    freq = 7
-    lastUpdated = datetime.today()
-    response = True
-
-    # connect to db
-    collection = connect_db()
-
-    # insert using today's date
-    insertion(collection, url, freq, lastUpdated, response)
-    # insert using 14 days earlier than today
-    url = "www.yahoo.com"
-    lastUpdated = datetime.today() - timedelta(days=14)
-    insertion(collection, url, freq, lastUpdated, response)
-    # test
-    scanner.db_scanner(collection)
-
-if __name__ == "__main__":
-    #main()
