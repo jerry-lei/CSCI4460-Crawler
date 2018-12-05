@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 # By expiring it means that the lastUpdated is "frequency" older
 def db_scanner(collection):
     item = collection.find_one()
+    if not item:
+        return []
     d = datetime.today() - timedelta(days = item['frequency'])
     
     #check = 0
