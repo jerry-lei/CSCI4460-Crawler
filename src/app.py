@@ -63,18 +63,16 @@ class DomainCrawl(Resource):
         Returns:
             [JSON] -- JSON Object containing a list of bad URLs
         """
-        parser = reqparse.RequestParser()
-        parser.add_argument("URLS")
-        args = parser.parse_args()
+        data = request.data.decode("utf-8")
+        data = ast.literal_eval(data)
         # Ensure payload is valid
-        if args["URLS"] is None:
+        if data["URLS"] is None:
             return "Bad Request: No URLS key found", 400
 
-        # Parse the payload
-        urls = ast.literal_eval(args["URLS"])
+        urls = data["URLS"]
         payload = []
         for url in urls:
-            payload.append(urls[url])
+            payload.append(url)
 
         # Send the URLs to the scheduler
         results = SCHEDULER.dump_hp_links(payload)
@@ -138,7 +136,7 @@ def main():
     timer_thread.start()
 
     # Start the server
-    APP.run(port=80, host='0.0.0.0')
+    APP.run(port=3000, host='0.0.0.0')
 
 if __name__ == '__main__':
     main()
