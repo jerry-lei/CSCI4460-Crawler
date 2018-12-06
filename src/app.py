@@ -64,6 +64,8 @@ class DomainCrawl(Resource):
             [JSON] -- JSON Object containing a list of bad URLs
         """
         data = request.data.decode("utf-8")
+        if(data is None):
+            return "Bad Request: Bad Payload sent", 400
         data = ast.literal_eval(data)
         # Ensure payload is valid
         if data["URLS"] is None:
