@@ -66,7 +66,8 @@ class DomainCrawl(Resource):
         data = request.data.decode("utf-8")
         if(data is None):
             return "Bad Request: Bad Payload sent", 400
-        data = ast.literal_eval(data)
+        if(type(data) is str or type(data) is bytes):
+            data = ast.literal_eval(data)
         # Ensure payload is valid
         if data["URLS"] is None:
             return "Bad Request: No URLS key found", 400
@@ -138,7 +139,7 @@ def main():
     timer_thread.start()
 
     # Start the server
-    APP.run(port=80, host='0.0.0.0')
+    APP.run(port=3000, host='0.0.0.0')
 
 if __name__ == '__main__':
     main()
