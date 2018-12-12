@@ -1,3 +1,10 @@
+""" This contains the functions for parsing robots.txt pages.
+
+    The get_bad_paths function should be used to get the paths which
+    are disallowed from the robots.txt page at a given URL.
+
+    Tests can be found in the appropriate file.
+"""
 
 import sys
 sys.path.append("../")
@@ -6,63 +13,68 @@ from crawl import crawler
 
 
 def get_bad_paths(link):
+    """ Reads a robots.txt file, given its URL, and returns a list of
+        paths which are not allowed to be crawled.
 
-	response = crawler.crawl_link(link)
-	if response[1] == True:
-		return parse(response[0].read().decode("unicode_escape"))
-	else:
-		return []
+        Input:
+            link -- the URL of a robots.txt file
+
+        Output:
+            A list of paths to files that are disallowed by the
+            robots.txt file.
+    """
+    response = crawler.crawl_link(link)
+    if response[1]:
+        return parse(response[0].read().decode("unicode_escape"))
+    return []
 
 
 def parse(text):
-	allowed_paths = []
-	# blocked_paths is the list of websites to be blocked.
-	blocked_paths = []
-	# blocks_apply is True if the current lines apply to our crawler.
-	blocks_apply = True
+    """ Parses a robots.txt page, given the page's contents as a string,
+        and returns a list of paths which are not allowed to be crawled.
 
-	lines = text.split("\n")
+        Input:
+            text -- the contents of a robots.txt file
 
-	for line in lines:
-		orig_line = line
-		# Ignore comments and blank lines
-		line = line.strip()
+        Output:
+            A list of paths to files that are disallowed by the
+            robots.txt file.
+    """
+    # blocked_paths is the list of websites to be blocked.
+    blocked_paths = []
+    # blocks_apply is True if the current lines apply to our crawler.
+    blocks_apply = True
 
-		if line.startswith("#") or line == "":
-			continue
+    lines = text.split("\n")
 
-		# Remove any comments that take up part of a line
-		line_parts = line.split("#")
-		line = line_parts[0]
+    for line in lines:
+        orig_line = line
+        # Ignore comments and blank lines
+        line = line.strip()
 
-		# Check if the user-agent applies.
-		if line.lower().startswith("user-agent:"):
-			parts = line.split(":", 1)
-			agent = parts[1].strip()
-			if (agent == "*"):
-				blocks_apply = True
-			else:
-				blocks_apply = False
+        if line.startswith("#") or line == "":
+            continue
 
-		# Record what pages the crawler is not allowed to crawl.
-		elif line.lower().startswith("disallow:"):
-			if blocks_apply:
-				parts = line.split(":", 1)
-				path = parts[1].strip()
-				blocked_paths.append(path)
-		else:
-			print("Could not parse line:", orig_line)
+        # Remove any comments that take up part of a line
+        line_parts = line.split("#")
+        line = line_parts[0].lower()
 
-	return blocked_paths
+        # Check if the user-agent applies.
+        if line.startswith("user-agent:"):
+            parts = line.split(":", 1)
+            agent = parts[1].strip()
+            blocks_apply = agent == "*"
+        # Record what pages the crawler is not allowed to crawl.
+        elif line.startswith("disallow:"):
+            if blocks_apply:
+                parts = line.split(":", 1)
+                path = parts[1].strip()
+                blocked_paths.append(path)
+        # There's no good way to handle specifically allowed paths.
+        elif line.startswith("allow:"):
+            continue
+        else:
+            print("Could not parse line:", orig_line)
 
-
-if __name__ == '__main__':
-	print("my part:", get_bad_paths("http://rpi.edu/robots.txt"))
-	print("my part:", get_bad_paths("http://cs.rpi.edu/robots.txt"))
-	print("my part:", get_bad_paths("http://rpi.edu/robots.taxt"))
-	print("my part:", get_bad_paths("https://www.google.com/search?q=null?"))
-	print("my part:", get_bad_paths("https://en.wikipedia.org/robots.txt"))
-	print("my part:", get_bad_paths("http://homepages.rpi.edu/~tullyw/test_robots.txt"))
-
-
+    return blocked_paths
 
