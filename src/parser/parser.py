@@ -77,4 +77,3 @@ def parse(text):
             print("Could not parse line:", orig_line)
 
     return blocked_paths
-
