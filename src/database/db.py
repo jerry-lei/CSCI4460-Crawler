@@ -4,39 +4,43 @@
 
 """
 import pymongo
-import pprint
 from pymongo import MongoClient
-from datetime import datetime, timedelta
 
-# Insert to db and doesn't allow duplicate insertion
-def insertion(collection, url, freq, lastUpdated, response):
+def insertion(collection, url, freq, last_updated, response):
+    """
+        Insert to database and doesn't allow duplicate insertion
+    """
     post = {"url": url,
             "frequency": freq,
-            "lastUpdated": lastUpdated,
+            "last_updated": last_updated,
             "Response": response}
 
-    # insert if and only if the item isn't already existed in the db
+    # insert if and only if the item isn't already existed in the database
     try:
-        post_id = collection.insert_one(post).inserted_id # unique key
-        print("Inserted")
-        print("post_id", post_id)
+        post = collection.insert_one(post).inserted_id # unique key
+        #print("Inserted")
+        #print("post_id", post_id)
         return 1
 
     except Exception:
-        print("Duplicates, do nothing")
+        #print("Duplicates, do nothing")
         return 0
 
 
-# connects to local database
 def connect_db():
+    """
+        connects to local database
+    """
     # connect to local database
     client = MongoClient()
     client = MongoClient('localhost', 27017)
     client = MongoClient('mongodb://localhost:27017/')
 
     # setup database and collection
-    db = client.database
-    collection = db.collection
+    database = client.database
+    collection = database.collection
 
-    db.collection.create_index([('url', pymongo.ASCENDING)], unique=True)
+    database.collection.create_index([('url', pymongo.ASCENDING)], unique=True)
+    print(database.collection_names(include_system_collections=False))
     return collection
+    
