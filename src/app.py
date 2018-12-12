@@ -6,16 +6,19 @@ requests to specific components.
 """
 
 import ast
-import validators
-import requests
 from threading import Timer
 from datetime import datetime
 from parser.parser import get_bad_paths
 from flask import Flask, request
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api, Resource
+import validators
+import requests
 from crawl.scheduler import Scheduler
 from database.db import insertion, connect_db
 from database.scanner import db_scanner
+
+
+
 
 
 
@@ -64,9 +67,9 @@ class DomainCrawl(Resource):
             [JSON] -- JSON Object containing a list of bad URLs
         """
         data = request.data.decode("utf-8")
-        if(data is None):
+        if data is None:
             return "Bad Request: Bad Payload sent", 400
-        if(type(data) is str or type(data) is bytes):
+        if isinstance(data, (bytes, str)):
             data = ast.literal_eval(data)
         # Ensure payload is valid
         if data["URLS"] is None:
